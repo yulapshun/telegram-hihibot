@@ -4,31 +4,29 @@ import (
 	"log"
 	"strings"
 	"regexp"
+	"net/http"
 	"gopkg.in/telegram-bot-api.v4"
 )
 
 func main() {
 	bot, err := tgbotapi.NewBotAPI("token")
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
 
 	bot.Debug = true
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
-	u := tgbotapi.NewUpdate(0)
-	u.Timeout = 60
+	_, err = bot.SetWebhook(tgbotapi.NewWebhookWithCert("https://5a52b38d.ngrok.io/"+bot.Token, "cert.pem"))
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	bot.RemoveWebhook()
-
-	updates, err := bot.GetUpdatesChan(u)
+	updates := bot.ListenForWebhook("/" + bot.Token)
+	go http.ListenAndServeTLS("0.0.0.0:8080", "cert.pem", "key.pem", nil)
 
 	for update := range updates {
-		if update.Message == nil {
-			continue
-		}
-
 		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
 		resp := ""
@@ -49,6 +47,5 @@ func main() {
 			msg.ReplyToMessageID = update.Message.MessageID
 			bot.Send(msg)
 		}
-
 	}
 }
