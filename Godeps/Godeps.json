@@ -1,0 +1,12 @@
+{
+	"ImportPath": "github.com/yulapshun/telegram-hihibot",
+	"GoVersion": "go1.8",
+	"GodepVersion": "v79",
+	"Deps": [
+		{
+			"ImportPath": "gopkg.in/telegram-bot-api.v4",
+			"Comment": "v4.6",
+			"Rev": "0a57807db79efce7f6719fbb2c0e0f83fda79aec"
+		}
+	]
+}
