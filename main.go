@@ -81,6 +81,9 @@ func runWebhook() {
 	go http.ListenAndServe(":" + strconv.Itoa(config.ListenPort), nil)
 
 	for update := range updates {
+		if update.Message == nil {
+			continue
+		}
 		run(update)
 	}
 }
