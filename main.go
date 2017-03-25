@@ -19,16 +19,29 @@ type Configuration struct {
 	ListenPort int `json:"listenPort"`
 }
 
+type Rule struct {
+	Type     string `json:"type"`
+	Patterns []string `json:"patterns"`
+	Response string `json:"response"`
+}
+
 var bot *tgbotapi.BotAPI
 var config Configuration
+var ruleSet []Rule
 
 func main() {
-
+	// Read config
 	file, _ := os.Open("config.json")
 	decoder := json.NewDecoder(file)
 	config = Configuration{}
 	err := decoder.Decode(&config)
 
+	// Read rules
+	file, _ = os.Open("ruleset.json")
+	decoder = json.NewDecoder(file)
+	err = decoder.Decode(&ruleSet)
+
+	// Init bot
 	_bot, err := tgbotapi.NewBotAPI(config.Token)
 	if err != nil {
 		log.Fatal(err)
@@ -75,22 +88,55 @@ func runWebhook() {
 func run(update tgbotapi.Update) {
 	log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
+	msgText := update.Message.Text
+	match := false
 	resp := ""
 
-	if strings.Contains(update.Message.Text, "老母") {
-		resp = "唔準提老母\U0001F621"
-	} else if strings.Contains(update.Message.Text, "屌") {
-		resp = "唔好屌\U0001F621"
-	} else {
-		match, _ := regexp.MatchString("[F|f]uck(ing|ed)?", update.Message.Text)
+	for _, rule := range ruleSet {
+		switch rule.Type {
+			case "match":
+			match, resp = compareMatch(rule, msgText)
+			case "contain":
+			match, resp = compareContain(rule, msgText)
+			case "regex":
+			match, resp = compareRegex(rule, msgText)
+		}
 		if match {
-			resp = "No fucking\U0001F621"
+			break
 		}
 	}
 
-	if resp != "" {
+	if match {
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, resp)
 		msg.ReplyToMessageID = update.Message.MessageID
 		bot.Send(msg)
 	}
+}
+
+func compareMatch(rule Rule, msgText string) (bool, string) {
+	for _,pattern := range rule.Patterns {
+		if pattern == msgText {
+			return true, rule.Response
+		}
+	}
+	return false, ""
+}
+
+func compareContain(rule Rule, msgText string) (bool, string) {
+	for _,pattern := range rule.Patterns {
+		if strings.Contains(msgText, pattern) {
+			return true, rule.Response
+		}
+	}
+	return false, ""
+}
+
+func compareRegex(rule Rule, msgText string) (bool, string) {
+	for _,pattern := range rule.Patterns {
+		match, _ := regexp.MatchString(pattern, msgText)
+		if match {
+			return true, rule.Response
+		}
+	}
+	return false, ""
 }
