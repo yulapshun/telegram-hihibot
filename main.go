@@ -77,7 +77,7 @@ func runPoll() {
 }
 
 func runWebhook() {
-	updates := bot.ListenForWebhook(config.ListenPath + bot.Token)
+	updates := bot.ListenForWebhook(config.ListenPath)
 	go http.ListenAndServe(":" + strconv.Itoa(config.ListenPort), nil)
 
 	for update := range updates {
