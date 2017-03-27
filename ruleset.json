@@ -1,47 +1,37 @@
 [
     {
-        "type": "contain",
-        "patterns": ["戇鳩", "on9", "On9", "ON9", "oN9"],
-        "response": "話你戇鳩怕你嬲 😡"
+        "type": "match",
+        "patterns": ["早晨"],
+        "response": "早你老母 😡"
     },
     {
         "type": "contain",
+        "patterns": ["老母", "老豆"],
+        "response": "唔准提%s 😡"
+    },
+    {
+        "type": "match",
         "patterns": ["屌穿你個閪", "屌爆你個閪"],
         "response": "屌穿你個閪呀 😡 屌爆你個閪呀 😡 屌你個老母呀 😡 屌爆你個閪呀 😡 屌臭你老母化閪呀 😡 屌你個閪影乜撚野呀屌你老母呀 😡 屌你老母呀影咩呀 😡 屌你阿媽個閪呀 😡 屌你老母 😡 屌穿你阿媽個閪呀 😡 屌爆你個老母 😡 "
     },
     {
-        "type": "contain",
-        "patterns": ["老母"],
-        "response": "唔准提老母 😡"
-    },
-    {
-        "type": "contain",
-        "patterns": ["老豆"],
-        "response": "唔准提老豆 😡"
-    },
-    {
-        "type": "contain",
-        "patterns": ["𨳒"],
-        "response": "唔好屌 😡"
-    },
-    {
-        "type": "contain",
-        "patterns": ["屌"],
-        "response": "唔好屌 😡"
-    },
-    {
         "type": "regex",
-        "patterns": ["(?i)\\bdiu\\b"],
-        "response": "唔好diu 😡"
+        "patterns": ["(?i)𨳒|屌|diu|(戇|on)[尻|鳩|9]|打(j|飛機)|玩jj"],
+        "response": "唔准%s 😡"
     },
     {
         "type": "contain",
-        "patterns": ["撚", "柒", "鳩", "閪"],
+        "patterns": ["撚", "柒", "鳩", "閪", "屄", "尻"],
         "response": "唔准提性器官 😡"
     },
     {
         "type": "regex",
-        "patterns": ["(?i)fuck(ing|ed)?"],
+        "patterns": ["(?i)\\bfuck(ing|ed)?\\b"],
         "response": "No fucking 😡"
+    },
+    {
+        "type": "regex",
+        "patterns": ["(?i)\\bshit(ting|ted)?\\b"],
+        "response": "No shitting 😡"
     }
 ]

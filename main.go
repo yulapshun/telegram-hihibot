@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"log"
 	"strings"
@@ -119,7 +120,11 @@ func run(update tgbotapi.Update) {
 func compareMatch(rule Rule, msgText string) (bool, string) {
 	for _,pattern := range rule.Patterns {
 		if pattern == msgText {
-			return true, rule.Response
+			if strings.Contains(rule.Response, "%s") {
+				return true, fmt.Sprintf(rule.Response, pattern)
+			} else {
+				return true, rule.Response
+			}
 		}
 	}
 	return false, ""
@@ -128,7 +133,11 @@ func compareMatch(rule Rule, msgText string) (bool, string) {
 func compareContain(rule Rule, msgText string) (bool, string) {
 	for _,pattern := range rule.Patterns {
 		if strings.Contains(msgText, pattern) {
-			return true, rule.Response
+			if strings.Contains(rule.Response, "%s") {
+				return true, fmt.Sprintf(rule.Response, pattern)
+			} else {
+				return true, rule.Response
+			}
 		}
 	}
 	return false, ""
@@ -136,9 +145,14 @@ func compareContain(rule Rule, msgText string) (bool, string) {
 
 func compareRegex(rule Rule, msgText string) (bool, string) {
 	for _,pattern := range rule.Patterns {
-		match, _ := regexp.MatchString(pattern, msgText)
-		if match {
-			return true, rule.Response
+		re := regexp.MustCompile(pattern)
+		match := re.FindString(msgText)
+		if match != "" {
+			if strings.Contains(rule.Response, "%s") {
+				return true, fmt.Sprintf(rule.Response, match)
+			} else {
+				return true, rule.Response
+			}
 		}
 	}
 	return false, ""
