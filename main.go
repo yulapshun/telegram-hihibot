@@ -9,6 +9,8 @@ import (
 	"regexp"
 	"net/http"
 	"encoding/json"
+	"math"
+	"math/rand"
 	"gopkg.in/telegram-bot-api.v4"
 )
 
@@ -111,6 +113,9 @@ func run(update tgbotapi.Update) {
 	}
 
 	if match {
+		if math.Floor(rand.Float64() * 1000) == 0 {
+			resp = "Bless you my child 😇"
+		}
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, resp)
 		msg.ReplyToMessageID = update.Message.MessageID
 		bot.Send(msg)
