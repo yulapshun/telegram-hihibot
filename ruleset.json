@@ -33,5 +33,15 @@
         "type": "regex",
         "patterns": ["(?i)\\bshit(ting|ted)?\\b"],
         "response": "No shitting 😡"
+    },
+    {
+        "type": "regex",
+        "patterns": ["唔撚係丫|唔撚係呀"],
+        "response": "試下講：「真係架？」"
+    },
+    {
+        "type": "regex",
+        "patterns": ["吾｜系｜甘｜牙"],
+        "response": "%s你老母"
     }
 ]
