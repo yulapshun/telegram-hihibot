@@ -1,7 +1,7 @@
 {
     "debug": true,
     "useWebhook": false,
-    "token": "277584400:AAE_ySA9yGH43rOAxE_LeFu-8nfEcaR9Qsc",
+    "token": "[replace me]",
     "listenPath": "/",
     "listenPort": 8080
 }
