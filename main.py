@@ -57,7 +57,7 @@ def run_polling():
     updater.idle()
 
 def run_webhook():
-    updater.start_polling(listen="0.0.0.0",
+    updater.start_webhook(listen="0.0.0.0",
                           port=config["listenPort"],
                           url_path=config["listenPath"])
     updater.bot.set_webhook(config["webhookUrl"])
