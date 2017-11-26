@@ -5,6 +5,7 @@ import logging
 
 config = {}
 ruleset = {}
+updater = None
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -51,16 +52,15 @@ def process_msg(bot, update):
     if response != "":
         update.message.reply_text(response, quote=True)
 
-def run_poll():
-
-    updater = Updater(config["token"])
-    dp = updater.dispatcher
-
-    dp.add_handler(MessageHandler(Filters.text, process_msg))
-    dp.add_error_handler(error)
-
+def run_polling():
     updater.start_polling()
+    updater.idle()
 
+def run_webhook():
+    updater.start_polling(listen="0.0.0.0",
+                          port=config["listenPort"],
+                          url_path=config["listenPath"])
+    updater.bot.set_webhook(config["webhookUrl"])
     updater.idle()
 
 def main():
@@ -72,7 +72,17 @@ def main():
     ruleset_file = open("ruleset.json", "r")
     ruleset = json.loads(ruleset_file.read())
 
-    run_poll()
+    global updater
+    updater = Updater(config["token"])
+    dp = updater.dispatcher
+
+    dp.add_handler(MessageHandler(Filters.text, process_msg))
+    dp.add_error_handler(error)
+
+    if config["useWebhook"]:
+        run_webhook()
+    else:
+        run_polling()
 
 
 if __name__ == '__main__':
