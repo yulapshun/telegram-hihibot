@@ -1,7 +1,7 @@
 {
     "debug": true,
     "useWebhook": false,
-    "token": "277584400:AAEuEzz8Y9JFZ09JqxZORT4LtzuH3eX6yFs",
+    "token": "[your own token]",
     "listenPath": "/",
     "listenPort": 8080,
     "webhookUrl": "[your own url]"
