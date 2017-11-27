@@ -19,19 +19,20 @@ def error(bot, update, error):
 def compare_match(rule, msg):
     for pattern in rule["patterns"]:
         if msg == pattern:
-            return rule["response"].format(msg)
+            return rule["response"].format(pattern)
     return ""
 
 def compare_contain(rule, msg):
     for pattern in rule["patterns"]:
         if pattern in msg:
-            return rule["response"].format(msg)
+            return rule["response"].format(pattern)
     return ""
 
 def compare_regex(rule, msg):
     for pattern in rule["patterns"]:
-        if re.match(pattern, msg):
-            return rule["response"].format(msg)
+        match = re.search(pattern, msg)
+        if match:
+            return rule["response"].format(match.group(0))
     return ""
 
 def process_msg(bot, update):
