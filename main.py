@@ -1,5 +1,6 @@
 import json
 import re
+import sys
 from telegram.ext import Updater, MessageHandler, Filters
 import logging
 
@@ -35,8 +36,7 @@ def compare_regex(rule, msg):
             return rule["response"].format(match.group(0))
     return ""
 
-def process_msg(bot, update):
-    msg = update.message.text
+def get_response(msg):
     response = ""
 
     for rule in ruleset:
@@ -49,9 +49,24 @@ def process_msg(bot, update):
 
         if response != "":
             break
+    return response
+
+def process_msg(bot, update):
+    msg = update.message.text
+
+    response = get_response(msg)
 
     if response != "":
         update.message.reply_text(response, quote=True)
+
+def run_cli():
+    msg = ""
+    while msg != "quit":
+        msg = input("Say something: ")
+        response = get_response(msg) or "Nothing"
+        print(response)
+    print("Bye")
+    exit(0)
 
 def run_polling():
     updater.start_polling()
@@ -72,6 +87,16 @@ def main():
 
     ruleset_file = open("ruleset.json", "r")
     ruleset = json.loads(ruleset_file.read())
+
+    mode = "--bot"
+    if len(sys.argv) == 2:
+        mode = sys.argv[1]
+    if mode not in ["--bot", "--interactive"]:
+        sys.stderr.write("Invalid argument: {}\n".format(mode))
+        exit(1)
+
+    if mode == "--interactive":
+        run_cli()
 
     global updater
     updater = Updater(config["token"])
