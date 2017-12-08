@@ -20,7 +20,7 @@ def error(bot, update, error):
 
 def get_response(msg):
     global responses
-    match = regex.match(msg)
+    match = regex.search(msg)
     if match:
         return responses[match.lastgroup].format(match.group())
     return ""
