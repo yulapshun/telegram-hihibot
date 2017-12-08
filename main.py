@@ -5,7 +5,8 @@ from telegram.ext import Updater, MessageHandler, Filters
 import logging
 
 config = {}
-ruleset = {}
+responses = {}
+regex = None
 updater = None
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -17,39 +18,12 @@ def error(bot, update, error):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, error)
 
-def compare_match(rule, msg):
-    for pattern in rule["patterns"]:
-        if msg == pattern:
-            return rule["response"].format(pattern)
-    return ""
-
-def compare_contain(rule, msg):
-    for pattern in rule["patterns"]:
-        if pattern in msg:
-            return rule["response"].format(pattern)
-    return ""
-
-def compare_regex(rule, msg):
-    for pattern in rule["patterns"]:
-        match = re.search(pattern, msg)
-        if match:
-            return rule["response"].format(match.group(0))
-    return ""
-
 def get_response(msg):
-    response = ""
-
-    for rule in ruleset:
-        if rule["type"] == "match":
-            response = compare_match(rule, msg)
-        elif rule["type"] == "contain":
-            response = compare_contain(rule, msg)
-        elif rule["type"] == "regex":
-            response = compare_regex(rule, msg)
-
-        if response != "":
-            break
-    return response
+    global responses
+    match = regex.match(msg)
+    if match:
+        return responses[match.lastgroup].format(match.group())
+    return ""
 
 def process_msg(bot, update):
     msg = update.message.text
@@ -81,12 +55,23 @@ def run_webhook():
 
 def main():
     global config
-    global ruleset
+    global responses
+    global regex
     config_file = open("config.json", "r")
     config = json.loads(config_file.read())
 
     ruleset_file = open("ruleset.json", "r")
     ruleset = json.loads(ruleset_file.read())
+
+    template = "(?P<{0}>{1})"
+    arr = []
+    count = 0
+    for rule in ruleset:
+        key = "g" + str(count)
+        arr.append(template.format(key, rule["regex"]))
+        responses[key] = rule["response"]
+        count = count + 1
+    regex = re.compile("|".join(arr))
 
     mode = "--bot"
     if len(sys.argv) == 2:
